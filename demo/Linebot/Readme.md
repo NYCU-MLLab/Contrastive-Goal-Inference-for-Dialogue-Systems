@@ -4,7 +4,7 @@
 
 ### Preparation
 * You need to get CHANNEL_SECRET, CHANNEL_ACCESS_TOKEN and setup on [LINE Developers](https://developers.line.biz)
-* You can refer to linebot.md
+* You can refer to [linebot.md](https://mllab.asuscomm.com:12960/s/e5OzBzhDn)
 
 ### Build
 * You need to change <CHANNEL_SECRET>, <CHANNEL_ACCESS_TOKEN> to your's
@@ -22,7 +22,7 @@ Using Line app and scan QR code from [LINE Developers](https://developers.line.b
 
 ### Demo
 
-<img src="./line.png" width="300">
+<img src="./line.jpg" width="300">
 
 
 ## 1. How to use
