@@ -22,7 +22,7 @@ Using Line app and scan QR code from [LINE Developers](https://developers.line.b
 
 ### Demo
 
-![](https://mllab.asuscomm.com:12950/hackmd/uploads/upload_24d3a1c8387ed6277b08ce3c1a479331.jpg =x500)
+<img src="./line.png" width="300">
 
 
 ## 1. How to use
