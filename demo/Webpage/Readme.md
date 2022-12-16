@@ -13,7 +13,7 @@ Using browser
 ### Demo
 
 ![](https://mllab.asuscomm.com:12950/hackmd/uploads/upload_dc8887acb8142677c6e50b36d3caa277.png)
-<img src="./web.png" width="200">
+<img src="./web.png" width="800">
 
 ## 1. How to use
 * Restaurant:
