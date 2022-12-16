@@ -25,7 +25,7 @@ Using Line app and scan QR code from [LINE Developers](https://developers.line.b
 <img src="./line.jpg" width="300">
 
 
-## 1. How to use
+## 3. How to use
 * Restaurant:
   * We can book the restaurant by offering the information about type of food and the price range.
   * After the system suggests the restaurant, we can ask for the address and phone number.
