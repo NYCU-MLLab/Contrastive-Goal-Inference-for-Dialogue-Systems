@@ -61,6 +61,9 @@ class Seq2Seq(BaseModel):
         self.max_hop = max_hop
         self.dropout = dropout
         self.use_gpu = use_gpu
+        self.qr=qr
+        self.cl=cl
+        self.kl=kl
 
         self.BOS = self.tgt_field.stoi[self.tgt_field.bos_token]
         self.reward_fn_ = reward_fn
@@ -540,7 +543,7 @@ class Seq2Seq(BaseModel):
             # qkb = nn.functional.normalize(outputs.dialog_state_memory[:, -1, :])
             qkb = nn.functional.normalize(self.projector(torch.mean(outputs.dialog_state_memory, 1)))
             
-            q_value = torch.matmul(qgl, qkb.T).diag().exp()
+            q_value = torch.matmul(qgl, qkb.T).diag().exp() * self.qr
             # q_value = nn.functional.normalize(q_value, dim=0)
             # # TD error learning Q value
             # q_value = self.Q_TD(outputs.dialog_state_memory[:, -1, :]).squeeze()
@@ -689,9 +692,9 @@ class Seq2Seq(BaseModel):
         #     cqloss += self.contrastiveloss(self.gl_cl[i], self.kb_cl[i]).item()
         #     total_loss += 0.5 * self.contrastiveloss(self.gl_cl[i], self.kb_cl[i])
         cqloss = self.contrastiveloss(self.gl_cl, self.kb_cl)
-        total_loss += 0.5 * cqloss
+        total_loss += self.cl * cqloss
 
-        total_loss += 0.1 * loss_kl
+        total_loss += self.kl * loss_kl
         # with open ("./notelossc.txt", "a") as file:
         #     file.write(str(cqloss))
         #     file.write(" ")

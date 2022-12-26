@@ -1,20 +1,9 @@
-# Webpage demo
+# Linebot demo
 
 ## 1. How to run
 
-### Preparation
-* You need to get CHANNEL_SECRET, CHANNEL_ACCESS_TOKEN and setup on [LINE Developers](https://developers.line.biz)
-* You can refer to [linebot.md](https://mllab.asuscomm.com:12960/s/e5OzBzhDn)
-
-### Build
-* You need to change <CHANNEL_SECRET>, <CHANNEL_ACCESS_TOKEN> to your's
 ```bash
-git clone https://github.com/hsuanchi/Flask-LINE-Bot-GCP.git
-cd /Flask-LINE-Bot-GCP/flask/
-echo "export CHANNEL_SECRET='<CHANNEL_SECRET>'" >> .flaskenv
-echo "export CHANNEL_ACCESS_TOKEN='<CHANNEL_ACCESS_TOKEN>'" >> .flaskenv
-cd ..
-sudo docker-compose up --build
+sudo docker run -itd -p ${port}:80 --rm --name demo --shm-size 32G --privileged --gpus all chin0880ee/cgi:line
 ```
 
 ## 2. How to access

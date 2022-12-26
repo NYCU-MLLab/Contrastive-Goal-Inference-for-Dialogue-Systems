@@ -8,9 +8,9 @@ pythonpath='python3'
 
 # set parameters
 data_dir=./data/KVR
-save_dir=./models/KVRec01klp_29445_18040
-output_dir=./outputs/KVRec01klp_29445_18040
-ckpt=state_epoch_10.model
+save_dir=./models/KVR
+output_dir=./outputs/KVR
+ckpt=state_epoch_8.model
 beam_size=4
 max_dec_len=25
 

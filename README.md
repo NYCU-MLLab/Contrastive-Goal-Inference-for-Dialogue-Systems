@@ -4,7 +4,13 @@ This repository contains data and code for the thesis "Contrastive Goal Inferenc
 This study presents a new contrastive reinforcement learning for multi-domain task-oriented dialogue based on the proposed Contrastive Goal Inference (CGI) where contrastive learning is performed and leveraged without the needs of auxiliary perception loss for data augmentation. The CGI is realized in a reinforcement learning algorithm to learn an informative goal from knowledge-based.
 
 ## Requirements
-The implementation is based on Python 3.x. To install the dependencies used in this project, please run:
+You can directly use docker:
+```
+sudo docker run -it --rm --shm-size 8G --gpus all chin0880ee/cgi bash
+```
+and git clone this repository.
+
+The implementation is based on Python 3.10.4 To install the dependencies used in this project. If you don't use docker, please run:
 ```
 pip install -r requirements.txt
 ```
@@ -19,7 +25,7 @@ save_dir=[xxx]        # directory to store trained models
 ```
 and then run:
 ```
-sh run_train.sh
+bash run_train_[kvr or woz].sh
 ```
 Note that more arguments for training can be found in the `main.py`. 
 
@@ -34,18 +40,18 @@ output_dir=[xxx]      # directory to store generation results
 ```
 and then run:
 ```
-sh run_test.sh
+bash run_test_[kvr or woz].sh
 ```
 Note that more arguments for testing can be found in the `main.py`. 
 
 ### Step 3: Evaluation
 For different datasets, please first set up the following parameters in the script `run_eval.sh`:
 ```
-data_name=[xxx]      # ['kvr', 'camrest', 'multiwoz']
+data_name=[xxx]      # ['kvr', 'multiwoz']
 data_dir=[xxx]       # directory of the specific dataset
 eval_dir=[xxx]       # directory of the generation output
 ```
 and then run:
 ```
-sh run_eval.sh
+bash run_eval_[kvr or woz].sh
 ```

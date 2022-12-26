@@ -1,19 +1,43 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
 import os
 import json
 import logging
 import argparse
+import torch
 import random
 import numpy as np
-import torch
 
 from source.inputter.corpus import KnowledgeCorpus
 from source.model.seq2seq import Seq2Seq
 from source.utils.engine import Trainer
 from source.utils.generator import BeamGenerator
+from source.utils.demo import BeamGeneratorDemo
 from source.utils.misc import str2bool
 
+from flask import Flask, request, abort
+from linebot import LineBotApi, WebhookHandler
+from linebot.exceptions import InvalidSignatureError
+
+from linebot.models import MessageEvent, TextMessage, TextSendMessage
+
+app = Flask(__name__)
+line_bot_api = LineBotApi('MLF6o8XFiemEUqqU7S/cewte7/aQ8wCx5usBCxRB28sZA9m9kau5oy5Nkixxiw5bX/08pkV60ry2LfxBWBzj7Fm3mBMkugM7LX3Ik6N0aq2AJWQ7337I3FOaso6leMqwnegcEucmQ46LIDSwqZ08WwdB04t89/1O/w1cDnyilFU=')
+handler = WebhookHandler('b0065e828ff21b8055e3804bcfbf61f7')
+
+@app.route("/dialog", methods=['POST'])
+def callback():
+    signature = request.headers['X-Line-Signature']
+
+    body = request.get_data(as_text=True)
+    app.logger.info("Request body: " + body)
+
+    try:
+        handler.handle(body, signature)
+    except InvalidSignatureError:
+        abort(400)
+
+    return 'OK'
 
 def model_config():
     """
@@ -30,11 +54,7 @@ def model_config():
 
     # Network
     net_arg = parser.add_argument_group("Network")
-    net_arg.add_argument("--seed", type=int, default=39393)
-    net_arg.add_argument("--qr", type=int, default=1)
-    net_arg.add_argument("--cl", type=int, default=0.5)
-    net_arg.add_argument("--kl", type=int, default=0.5)
-    net_arg.add_argument("--embed_size", type=int, default=256)
+    net_arg.add_argument("--embed_size", type=int, default=200)
     net_arg.add_argument("--hidden_size", type=int, default=256)
     net_arg.add_argument("--bidirectional", type=str2bool, default=False)
     net_arg.add_argument("--max_vocab_size", type=int, default=30000)
@@ -50,7 +70,7 @@ def model_config():
     # Training
     train_arg = parser.add_argument_group("Training")
     train_arg.add_argument("--gpu", type=int, default=0)
-    train_arg.add_argument("--batch_size", type=int, default=8)
+    train_arg.add_argument("--batch_size", type=int, default=1)
     train_arg.add_argument("--optimizer", type=str, default="Adam")
     train_arg.add_argument("--lr", type=float, default=0.0005)
     train_arg.add_argument("--lr_decay", type=float, default=0.5)
@@ -66,6 +86,7 @@ def model_config():
     # Generation
     gen_arg = parser.add_argument_group("Generation")
     gen_arg.add_argument("--test", action="store_true")
+    gen_arg.add_argument("--demo", action="store_true")
     gen_arg.add_argument("--ckpt", type=str, default="best.model")
     gen_arg.add_argument("--beam_size", type=int, default=1)
     gen_arg.add_argument("--max_dec_len", type=int, default=20)
@@ -76,14 +97,37 @@ def model_config():
 
     return config
 
+@handler.add(MessageEvent, message=TextMessage)
+def test_end2end(event):
+    global turn_inputs, kb_inputs
+    if event.source.user_id != "Udeadbeefdeadbeefdeadbeefdeadbeef":
+        user_response = event.message.text
+        sys_response = demo.forward(turn_inputs=turn_inputs, kb_inputs=kb_inputs, enc_hidden=None, user_response=user_response)
+        
+        if user_response == "End":
+            session_over = True
+        else:
+            session_over = False
 
-def main():
-    """
-    main
-    """
-    config = model_config()
+        if session_over==True:
+            line_bot_api.reply_message(
+                event.reply_token,
+                TextSendMessage(text="-------------------------------------"+str(step//2))
+            )
+            sysinit()
+        else:
+            line_bot_api.reply_message(
+                event.reply_token,
+                TextSendMessage(text=sys_response)
+            )
+            
 
-    seed = config.seed
+def sysinit():
+    global test_iter, turn_inputs, kb_inputs
+    turn_inputs, kb_inputs = demo.generate(data_iter=test_iter, output_dir=config.output_dir, verbos=True)
+
+if __name__ == '__main__':
+    seed = 8938
     torch.manual_seed(seed)
     torch.cuda.manual_seed(seed)
     torch.cuda.manual_seed_all(seed)
@@ -93,13 +137,15 @@ def main():
     torch.backends.cudnn.deterministic = True
     os.environ['PYTHONHASHSEED'] = str(seed)
 
+    config = model_config()
+
     config.use_gpu = torch.cuda.is_available() and config.gpu >= 0
 
     # Data definition
     corpus = KnowledgeCorpus(data_dir=config.data_dir,
-                             min_freq=0, max_vocab_size=config.max_vocab_size,
-                             min_len=config.min_len, max_len=config.max_len,
-                             embed_file=config.embed_file, share_vocab=config.share_vocab)
+                            min_freq=0, max_vocab_size=config.max_vocab_size,
+                            min_len=config.min_len, max_len=config.max_len,
+                            embed_file=config.embed_file, share_vocab=config.share_vocab)
     corpus.load()
 
     # Model definition
@@ -109,81 +155,27 @@ def main():
                     num_layers=config.num_layers, bidirectional=config.bidirectional,
                     attn_mode=config.attn, with_bridge=config.with_bridge,
                     tie_embedding=config.tie_embedding, dropout=config.dropout,
-                    max_hop=config.max_hop, use_gpu=config.use_gpu, qr=config.qr, cl=config.cl, kl=config.kl)
+                    max_hop=config.max_hop, use_gpu=config.use_gpu)
 
     # Generator definition
     generator = BeamGenerator(model=model, src_field=corpus.SRC, tgt_field=corpus.TGT, kb_field=corpus.KB,
-                              beam_size=config.beam_size, max_length=config.max_dec_len,
-                              ignore_unk=config.ignore_unk,
-                              length_average=config.length_average, use_gpu=config.use_gpu)
+                            beam_size=config.beam_size, max_length=config.max_dec_len,
+                            ignore_unk=config.ignore_unk,
+                            length_average=config.length_average, use_gpu=config.use_gpu)
+                            
+    # demo definition
+    demo = BeamGeneratorDemo(model=model, src_field=corpus.SRC, tgt_field=corpus.TGT, kb_field=corpus.KB,
+                                beam_size=config.beam_size, max_length=config.max_dec_len,
+                                ignore_unk=config.ignore_unk,
+                                length_average=config.length_average, use_gpu=config.use_gpu)
 
-    # Testing
-    if config.test and config.ckpt:
-        # os.system("rm ./tmp/*")
-        os.system("rm ./tsne/tsnedata.npy ./tsne/tsnelabel.txt")
-        
+    # demo
+    if config.demo and config.ckpt:
         test_iter = corpus.create_batches(config.batch_size, data_type="test", shuffle=False)
-
         model_path = os.path.join(config.save_dir, config.ckpt)
         model.load(model_path)
-        print("Testing ...")
-        metrics = Trainer.evaluate(model, test_iter)
-        print(metrics.report_cum())
-        print("Generating ...")
-        os.system("rm ./copyprob/copydata.npy")
-        generator.generate(data_iter=test_iter, output_dir=config.output_dir, verbos=True)
 
-    else:
-        train_iter = corpus.create_batches(config.batch_size, data_type="train", shuffle=True)
-        valid_iter = corpus.create_batches(config.batch_size, data_type="valid", shuffle=False)
+        turn_inputs, kb_inputs = demo.generate(data_iter=test_iter, output_dir=config.output_dir, verbos=True)          
 
-        # Load word embeddings if possible
-        if config.use_embed and config.embed_file is not None:
-            model.encoder.embedder.load_embeddings(corpus.SRC.embeddings, scale=0.03)
-            model.decoder.embedder.load_embeddings(corpus.TGT.embeddings, scale=0.03)
+        app.run(host='0.0.0.0', port=80, debug=True)
 
-        # Optimizer definition
-        optimizer = getattr(torch.optim, config.optimizer)(model.parameters(), lr=config.lr)
-
-        if config.lr_decay is not None and 0 < config.lr_decay < 1.0:
-            lr_scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
-                optimizer=optimizer, mode='min', factor=config.lr_decay,
-                patience=config.patience, verbose=True, min_lr=1e-6)
-        else:
-            lr_scheduler = None
-
-        # Save directory
-        if not os.path.exists(config.save_dir):
-            os.makedirs(config.save_dir)
-
-        # Logger definition
-        logger = logging.getLogger(__name__)
-        logging.basicConfig(level=logging.DEBUG, format="%(message)s")
-        fh = logging.FileHandler(os.path.join(config.save_dir, "train.log"))
-        logger.addHandler(fh)
-        params_file = os.path.join(config.save_dir, "params.json")
-        with open(params_file, 'w') as fp:
-            json.dump(config.__dict__, fp, indent=4, sort_keys=True)
-        logger.info("Saved params to '{}'".format(params_file))
-        logger.info(model)
-
-        # Training
-        logger.info("Training starts ... seed:" + str(config.seed))
-        trainer = Trainer(model=model, optimizer=optimizer, train_iter=train_iter,
-                          valid_iter=valid_iter, logger=logger, valid_metric_name="-loss",
-                          num_epochs=config.num_epochs, pre_epochs=config.pre_epochs,
-                          save_dir=config.save_dir, log_steps=config.log_steps,
-                          valid_steps=config.valid_steps, grad_clip=config.grad_clip,
-                          lr_scheduler=lr_scheduler, entity_dir=config.data_dir)
-        if config.ckpt is not None:
-            trainer.load(file_ckpt=config.ckpt)
-        trainer.train()
-
-        logger.info("Training done!")
-
-
-if __name__ == '__main__':
-    try:
-        main()
-    except KeyboardInterrupt:
-        print("\nExited from the program ealier!")
