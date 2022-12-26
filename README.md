@@ -25,7 +25,7 @@ save_dir=[xxx]        # directory to store trained models
 ```
 and then run:
 ```
-bash run_train_[kvr or woz].sh
+bash run_train_[smd or woz].sh
 ```
 Note that more arguments for training can be found in the `main.py`. 
 
@@ -40,18 +40,18 @@ output_dir=[xxx]      # directory to store generation results
 ```
 and then run:
 ```
-bash run_test_[kvr or woz].sh
+bash run_test_[smd or woz].sh
 ```
 Note that more arguments for testing can be found in the `main.py`. 
 
 ### Step 3: Evaluation
 For different datasets, please first set up the following parameters in the script `run_eval.sh`:
 ```
-data_name=[xxx]      # ['kvr', 'multiwoz']
+data_name=[xxx]      # ['smd', 'multiwoz']
 data_dir=[xxx]       # directory of the specific dataset
 eval_dir=[xxx]       # directory of the generation output
 ```
 and then run:
 ```
-bash run_eval_[kvr or woz].sh
+bash run_eval_[smd or woz].sh
 ```
