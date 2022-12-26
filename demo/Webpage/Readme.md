@@ -3,7 +3,7 @@
 ## 1. How to run
 
 ```bash
-sudo docker run -itd -p ${port}:80 --rm --name demo --shm-size 32G --privileged --gpus all chin0880ee/cgi:web
+sudo docker run -itd -p ${port}:80 --name demo --shm-size 32G --privileged --gpus all chin0880ee/cgi:web
 ```
 
 ## 2. How to access
