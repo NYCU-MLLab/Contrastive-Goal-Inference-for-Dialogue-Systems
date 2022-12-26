@@ -1,0 +1,7 @@
+BLEU SCORE: 18.040
+Per resp. ACC: 25.83%
+Per dialog ACC: 26.32%
+F1 SCORE: 63.71%
+Sch. F1: 72.16%
+Wet. F1: 60.89%
+Nav. F1: 60.04%
