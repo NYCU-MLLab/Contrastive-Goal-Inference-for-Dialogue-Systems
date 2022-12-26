@@ -25,7 +25,7 @@ app = Flask(__name__)
 line_bot_api = LineBotApi('MLF6o8XFiemEUqqU7S/cewte7/aQ8wCx5usBCxRB28sZA9m9kau5oy5Nkixxiw5bX/08pkV60ry2LfxBWBzj7Fm3mBMkugM7LX3Ik6N0aq2AJWQ7337I3FOaso6leMqwnegcEucmQ46LIDSwqZ08WwdB04t89/1O/w1cDnyilFU=')
 handler = WebhookHandler('b0065e828ff21b8055e3804bcfbf61f7')
 
-@app.route("/dialog", methods=['POST'])
+@app.route("/12138", methods=['POST'])
 def callback():
     signature = request.headers['X-Line-Signature']
 
@@ -54,7 +54,11 @@ def model_config():
 
     # Network
     net_arg = parser.add_argument_group("Network")
-    net_arg.add_argument("--embed_size", type=int, default=200)
+    net_arg.add_argument("--seed", type=int, default=39393)
+    net_arg.add_argument("--qr", type=float, default=1)
+    net_arg.add_argument("--cl", type=float, default=0.5)
+    net_arg.add_argument("--kl", type=float, default=0.5)
+    net_arg.add_argument("--embed_size", type=int, default=256)
     net_arg.add_argument("--hidden_size", type=int, default=256)
     net_arg.add_argument("--bidirectional", type=str2bool, default=False)
     net_arg.add_argument("--max_vocab_size", type=int, default=30000)
@@ -112,7 +116,7 @@ def test_end2end(event):
         if session_over==True:
             line_bot_api.reply_message(
                 event.reply_token,
-                TextSendMessage(text="-------------------------------------"+str(step//2))
+                TextSendMessage(text="-------------------------------------")
             )
             sysinit()
         else:
@@ -127,16 +131,6 @@ def sysinit():
     turn_inputs, kb_inputs = demo.generate(data_iter=test_iter, output_dir=config.output_dir, verbos=True)
 
 if __name__ == '__main__':
-    seed = 8938
-    torch.manual_seed(seed)
-    torch.cuda.manual_seed(seed)
-    torch.cuda.manual_seed_all(seed)
-    np.random.seed(seed)
-    random.seed(seed)
-    torch.backends.cudnn.benchmark = False
-    torch.backends.cudnn.deterministic = True
-    os.environ['PYTHONHASHSEED'] = str(seed)
-
     config = model_config()
 
     config.use_gpu = torch.cuda.is_available() and config.gpu >= 0
@@ -155,7 +149,7 @@ if __name__ == '__main__':
                     num_layers=config.num_layers, bidirectional=config.bidirectional,
                     attn_mode=config.attn, with_bridge=config.with_bridge,
                     tie_embedding=config.tie_embedding, dropout=config.dropout,
-                    max_hop=config.max_hop, use_gpu=config.use_gpu)
+                    max_hop=config.max_hop, use_gpu=config.use_gpu, qr=0.5, cl=0.5, kl=0.5)
 
     # Generator definition
     generator = BeamGenerator(model=model, src_field=corpus.SRC, tgt_field=corpus.TGT, kb_field=corpus.KB,
@@ -174,6 +168,10 @@ if __name__ == '__main__':
         test_iter = corpus.create_batches(config.batch_size, data_type="test", shuffle=False)
         model_path = os.path.join(config.save_dir, config.ckpt)
         model.load(model_path)
+
+        demo.model.en_td = [torch.Tensor([]).cuda() for i in range(1)]
+        demo.model.gl_cl = torch.Tensor([]).cuda()
+        demo.model.kb_cl = torch.Tensor([]).cuda()
 
         turn_inputs, kb_inputs = demo.generate(data_iter=test_iter, output_dir=config.output_dir, verbos=True)          
 
