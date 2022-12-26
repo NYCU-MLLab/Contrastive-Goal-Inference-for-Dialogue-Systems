@@ -66,12 +66,12 @@ class BeamGeneratorDemo(object):
             enc_inputs = src[:, 1:-1], src_lengths - 2  # filter <bos> <eos>
 
             # generate word by word
-            enc_outputs, dec_init_state = self.model.encode(enc_inputs, enc_hidden)
+            enc_outputs, dec_init_state, loss_kl = self.model.encode(enc_inputs, enc_hidden)
             preds, lens, scores, dec_state = self.decode(dec_init_state)
 
             # update memory
             dec_inputs = tgt[:, :-1], tgt_lengths - 1  # filter <eos>
-            outputs = self.model.forward(enc_inputs, dec_inputs)
+            outputs, loss_kl = self.model.forward(enc_inputs, dec_inputs)
             self.model.update_memory(dialog_state_memory=outputs.dialog_state_memory,
                                         kb_state_memory=outputs.kb_state_memory)
             src_text = self.src_field.denumericalize(src)
@@ -272,7 +272,7 @@ class BeamGeneratorDemo(object):
         generate
         """
         results = []
-        local_data = data_iter.get_batch(np.random.randint(0,304))
+        local_data = data_iter.get_batch(np.random.randint(0,104))
         turn_inputs = create_turn_batch(local_data['inputs'])
         kb_inputs = create_kb_batch(local_data['kbs'])
         with torch.no_grad():
