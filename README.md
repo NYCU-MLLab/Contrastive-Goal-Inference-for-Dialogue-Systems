@@ -6,7 +6,7 @@ This study presents a new contrastive reinforcement learning for multi-domain ta
 ## Requirements
 You can directly use docker:
 ```
-sudo docker run -it --rm --shm-size 8G --gpus all chin0880ee/cgi bash
+sudo docker run -it --rm --shm-size 8G --privileged --gpus all chin0880ee/cgi bash
 ```
 and git clone this repository.
 

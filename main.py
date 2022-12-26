@@ -31,9 +31,9 @@ def model_config():
     # Network
     net_arg = parser.add_argument_group("Network")
     net_arg.add_argument("--seed", type=int, default=39393)
-    net_arg.add_argument("--qr", type=int, default=1)
-    net_arg.add_argument("--cl", type=int, default=0.5)
-    net_arg.add_argument("--kl", type=int, default=0.5)
+    net_arg.add_argument("--qr", type=float, default=1)
+    net_arg.add_argument("--cl", type=float, default=0.5)
+    net_arg.add_argument("--kl", type=float, default=0.5)
     net_arg.add_argument("--embed_size", type=int, default=256)
     net_arg.add_argument("--hidden_size", type=int, default=256)
     net_arg.add_argument("--bidirectional", type=str2bool, default=False)
@@ -120,7 +120,7 @@ def main():
     # Testing
     if config.test and config.ckpt:
         # os.system("rm ./tmp/*")
-        os.system("rm ./tsne/tsnedata.npy ./tsne/tsnelabel.txt")
+        # os.system("rm ./tsne/tsnedata.npy ./tsne/tsnelabel.txt")
         
         test_iter = corpus.create_batches(config.batch_size, data_type="test", shuffle=False)
 
@@ -130,7 +130,7 @@ def main():
         metrics = Trainer.evaluate(model, test_iter)
         print(metrics.report_cum())
         print("Generating ...")
-        os.system("rm ./copyprob/copydata.npy")
+        # os.system("rm ./copyprob/copydata.npy")
         generator.generate(data_iter=test_iter, output_dir=config.output_dir, verbos=True)
 
     else:

@@ -33,6 +33,9 @@ class Seq2Seq(BaseModel):
                  kb_field,
                  embed_size,
                  hidden_size,
+                 qr,
+                 cl,
+                 kl,
                  padding_idx=None,
                  num_layers=1,
                  bidirectional=False,
@@ -446,23 +449,23 @@ class Seq2Seq(BaseModel):
         logits = p_con * kb_logits + (1 - p_con) * con_logits
         log_logits = torch.log(logits + 1e-12)
 
-        # copy prob
-        pvoc = (1 - p_con) * p_gen
-        pmem = (1 - p_con) * (1 - p_gen)
-        pkb = p_con
-        copy_prob = torch.cat((pvoc, pmem, pkb), 2).cpu().detach().numpy()
-        probfile = "./copyprob/copydata.npy"
-        try:
-            b = np.load(probfile)
-            if b.shape[1] > copy_prob.shape[1]:
-                copy_prob = np.append(copy_prob, np.zeros((copy_prob.shape[0], b.shape[1]-copy_prob.shape[1], copy_prob.shape[2])), 1)
-            elif b.shape[1] < copy_prob.shape[1]:
-                b = np.append(b, np.zeros((b.shape[0], copy_prob.shape[1]-b.shape[1], b.shape[2])), 1)
-            c = np.append(b, copy_prob, 0)
-            np.save(probfile, c)
-        except:
-            np.save(probfile, copy_prob)
-        # copy prob end
+        # # copy prob
+        # pvoc = (1 - p_con) * p_gen
+        # pmem = (1 - p_con) * (1 - p_gen)
+        # pkb = p_con
+        # copy_prob = torch.cat((pvoc, pmem, pkb), 2).cpu().detach().numpy()
+        # probfile = "./copyprob/copydata.npy"
+        # try:
+        #     b = np.load(probfile)
+        #     if b.shape[1] > copy_prob.shape[1]:
+        #         copy_prob = np.append(copy_prob, np.zeros((copy_prob.shape[0], b.shape[1]-copy_prob.shape[1], copy_prob.shape[2])), 1)
+        #     elif b.shape[1] < copy_prob.shape[1]:
+        #         b = np.append(b, np.zeros((b.shape[0], copy_prob.shape[1]-b.shape[1], b.shape[2])), 1)
+        #     c = np.append(b, copy_prob, 0)
+        #     np.save(probfile, c)
+        # except:
+        #     np.save(probfile, copy_prob)
+        # # copy prob end
 
         gate_logits = p_con.squeeze(-1)
         selector_logits = dec_init_state.selector
