@@ -15,8 +15,7 @@ Using Line app and scan QR code from [LINE Developers](https://developers.line.b
 
 ### Demo
 
-<img src="./line.jpg" width="300">
-<img src="./End.jpg" width="300">
+<img src="./line.jpg" width="300"><img src="./End.jpg" width="300">
 
 ## 3. How to use
 * Restaurant:
