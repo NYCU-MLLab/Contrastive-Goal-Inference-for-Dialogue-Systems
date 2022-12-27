@@ -2,6 +2,10 @@
 
 ## 1. How to run
 
+### Preparation
+* You need to get CHANNEL_SECRET, CHANNEL_ACCESS_TOKEN and setup on [LINE Developers](https://developers.line.biz)
+* You can refer to [linebot](https://mllab.asuscomm.com:12960/s/e5OzBzhDn)
+
 ```bash
 sudo docker run -itd -p ${port}:80 -e port=${port} -e secret="<Channel secret>" -e access="<Channel access token>" --name demo --shm-size 32G --privileged --gpus all chin0880ee/cgi:line
 ```
