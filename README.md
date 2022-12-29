@@ -12,7 +12,7 @@ and git clone this repository.
 
 The implementation is based on Python 3.10.4 To install the dependencies used in this project. If you don't use docker, please run:
 ```
-pip install -r requirements.txt
+pip install nltk scikit-learn tqdm matplotlib seaborn line-bot-sdk flask torch==1.13.0
 ```
 
 ## Quickstart
