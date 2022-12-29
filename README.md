@@ -15,6 +15,8 @@ The implementation is based on Python 3.10.4 To install the dependencies used in
 pip install nltk scikit-learn tqdm matplotlib seaborn line-bot-sdk flask torch==1.13.0
 ```
 
+Relative environment: Ubuntu==22.04, Python==3.10.6, nvidia driver==470.141.03
+
 ## Quickstart
 
 ### Step 1: Training
