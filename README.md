@@ -3,6 +3,8 @@ This repository contains data and code for the thesis "Contrastive Goal Inferenc
 
 This study presents a new contrastive reinforcement learning for multi-domain task-oriented dialogue based on the proposed Contrastive Goal Inference (CGI) where contrastive learning is performed and leveraged without the needs of auxiliary perception loss for data augmentation. The CGI is realized in a reinforcement learning algorithm to learn an informative goal from knowledge-based.
 
+The demonstration video: https://youtu.be/Km6ABG0QspM
+
 ## Requirements
 You can directly use docker:
 ```
