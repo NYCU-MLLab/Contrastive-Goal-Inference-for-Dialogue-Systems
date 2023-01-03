@@ -39,7 +39,7 @@ For self-critical sequence training, please set up `num_epochs` larger than `pre
 For different datasets, please first set up the following parameters in the script `run_test.sh`:
 ```
 data_dir=[xxx]        # directory of the specific dataset
-save_dir=[xxx]        # directory of the rrtrained models
+save_dir=[xxx]        # directory of the trained models
 output_dir=[xxx]      # directory to store generation results
 ```
 and then run:
@@ -59,3 +59,9 @@ and then run:
 ```
 bash run_eval_[smd or woz].sh
 ```
+
+## Acknowledgement
+
+**Dual Dynamic Memory Network for End-to-End Multi-turn Task-oriented Dialog Systems**. [Jian Wang](https://aclanthology.org/people/j/jian-wang/), [Junhao Liu](https://aclanthology.org/people/j/junhao-liu/), [Wei Bi](https://aclanthology.org/people/w/wei-bi/), [Xiaojiang Liu](https://aclanthology.org/people/x/xiaojiang-liu/), [Kejing He](https://aclanthology.org/people/k/kejing-he/), [Ruifeng Xu](https://aclanthology.org/people/r/ruifeng-xu/), [Min Yang](https://aclanthology.org/people/m/min-yang/). ***COLING 2020***. [[PDF]](https://www.aclweb.org/anthology/2020.coling-main.362) [[Code]](https://github.com/siat-nlp/DDMN)
+
+>   We are highly grateful for the public code of DDMN!
