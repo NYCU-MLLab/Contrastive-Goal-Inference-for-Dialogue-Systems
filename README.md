@@ -60,6 +60,12 @@ and then run:
 bash run_eval_[smd or woz].sh
 ```
 
+## Result
+| MultiWOZ |         | SMD  |         |
+| -------- | ------- | ---- | ------- |
+| BLEU     | Ent. F1 | BLEU | Ent. F1 |
+| 14.7     | 26.9    | 18.0 | 63.3    |
+
 ## Acknowledgement
 
 **Dual Dynamic Memory Network for End-to-End Multi-turn Task-oriented Dialog Systems**. [Jian Wang](https://aclanthology.org/people/j/jian-wang/), [Junhao Liu](https://aclanthology.org/people/j/junhao-liu/), [Wei Bi](https://aclanthology.org/people/w/wei-bi/), [Xiaojiang Liu](https://aclanthology.org/people/x/xiaojiang-liu/), [Kejing He](https://aclanthology.org/people/k/kejing-he/), [Ruifeng Xu](https://aclanthology.org/people/r/ruifeng-xu/), [Min Yang](https://aclanthology.org/people/m/min-yang/). ***COLING 2020***. [[PDF]](https://www.aclweb.org/anthology/2020.coling-main.362) [[Code]](https://github.com/siat-nlp/DDMN)
