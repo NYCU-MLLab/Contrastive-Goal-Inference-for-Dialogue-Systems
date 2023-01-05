@@ -64,7 +64,7 @@ bash run_eval_[smd or woz].sh
 | MultiWOZ |         | SMD  |         |
 | -------- | ------- | ---- | ------- |
 | BLEU     | Ent. F1 | BLEU | Ent. F1 |
-| 14.7     | 26.9    | 18.0 | 63.3    |
+| 14.5     | 26.9    | 18.0 | 63.3    |
 
 ## Acknowledgement
 
