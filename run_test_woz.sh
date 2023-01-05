@@ -10,7 +10,7 @@ pythonpath='python3'
 data_dir=./data/MULTIWOZ2.1
 save_dir=./models/MULTIWOZ2.1
 output_dir=./outputs/MULTIWOZ2.1
-ckpt=state_epoch_8.model
+ckpt=state_epoch_7.model
 beam_size=4
 max_dec_len=25
 
