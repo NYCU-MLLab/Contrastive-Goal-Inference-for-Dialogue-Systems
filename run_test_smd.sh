@@ -10,7 +10,7 @@ pythonpath='python3'
 data_dir=./data/KVR
 save_dir=./models/KVR
 output_dir=./outputs/KVR
-ckpt=state_epoch_8.model
+ckpt=state_epoch_7.model
 beam_size=4
 max_dec_len=25
 
